@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+div#memoryBoard{
+    background: #CCC;
+    border: #999 1px solid;
+    width: 800px;
+    height: 540px;
+    padding: 24px;
+    margin: 0px auto;
+}
+div#memoryBoard > div{
+    background: url(MemoryGamePage.html) no-repeat;
+    border: #000 1px solid;
+    width: 71px;
+    height: 71px;
+    float:left;
+    margin: 10px;
+    padding: 20px;
+    font-size: 64px;
+    cursor: pointer;
+    text-align:center;
+}
+</style>
+<script>
+var memoryArray = ['MEOW', 'MEOW', 'GRRR', 'GRRR', 'RAWR', 'RAWR', 'OINK', 'OINK', 'HAM', 'HAM', 'MMHMM', 'MMHMM'];
+
+var memoryValues = [];
+var memoryTileIds = [];
+var tilesFlipped = 0;
+Array.prototype.memoryTileShuffle = function () {
+    var i = this.length, j, temp;
+    while (--i > 0) {
+        j = Math.floor(Math.random() * (i + 1));
+        temp = this[j];
+        this[j] = this[i];
+        this[i] = temp;
+    }
+}
+function newBoard() {
+    tilesFlipped = 0;
+    var output = '';
+    memoryArray.memoryTileShuffle();
+    for (var i = 0; i < memoryArray.length; i++) {
+        output += '<div id="tile_'+i+'" oneclick = "memoryFlipTile(this,\'' + memoryArray[i] + '\')"></div>';
+    }
+    document.getElementById('memoryBoard').innerHTML = output;
+}
+function memoryFlipTile(tile,val) {
+    if (tile.innerHTML == "" && memoryValues.length < 2) {
+        tile.style.background = '#FFF';
+        tile.innerHTML = val;
+        if (memoryValues.length == 0) {
+            memoryValues.push(val);
+            memoryTileIds.push(tile.id);
+        } else if (memoryValues.length == 1) {
+            memoryValues.push(val);
+            memoryTileIds.push(tile.id);
+            if (memoryValues[0] == memoryValues[1]) {
+                tilesFlipped += 2;
+
+                memoryValues = [];
+                memoryTileIds = [];
+
+                if (tilesFlipped == memoryArray.length) {
+                    alert("Board Cleared. Creating New Board");
+                    document.getElementById('memoryBoard').innerHTML = "";
+                    newBoard();
+                }
+            } else {
+                function flip2Back() {
+                    var tile_1 = document.getElementById(memoryTileIds[0]);
+                    var tile_2 = document.getElementById(memoryTileIds[1]);
+                    tile_1.style.background = 'url(tile_bg.jpg) no-repeat';
+                    tile_1.innerHTML = "";
+                    tile_2.style.background = 'url(tile_bg.jpg) no-repeat';
+                    tile_2.innerHTML = "";
+
+                    memoryValues = [];
+                    memoryTileIds = [];
+                }
+                    setTimeout(flip2Back, 700);
+                }
+            }
+        }
+    }
+
+</script>
+</head>
+<body>
+<div id="memoryBoard"></div>
+<script>newBoard();</script>
+</body>
+</html>
